@@ -1,0 +1,1283 @@
+swagger: "2.0"
+info:
+  title: Coinford API
+  description: This document describes all the API for coinford.com
+  version: 1.0.0
+  termsOfService: http://coinford.com/
+  contact:
+    email: coinford@gmail.com
+  license:
+    name: '@Coinford 2017'
+    url: http://coinford.com
+basePath: /v1
+paths:
+  /country/list:
+    post:
+      tags:
+      - country
+      description: get the list of countries
+      operationId: CountryController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestCountryList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /currency/list:
+    post:
+      tags:
+      - currency
+      description: get all the wallets for the user
+      operationId: CurrencyController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /data/add:
+    post:
+      tags:
+      - data
+      description: add data
+      operationId: DataController.Add Data
+      parameters:
+      - in: body
+        name: body
+        description: Data Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.DataUpload'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /data/delete:
+    delete:
+      tags:
+      - data
+      description: delete the user
+      operationId: DataController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.DataId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /data/list:
+    post:
+      tags:
+      - data
+      description: get all the data for the user and the type
+      operationId: DataController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.FieldType'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /email/change:
+    post:
+      tags:
+      - email
+      description: change email for the user
+      operationId: EmailController.ChangeEmail
+      parameters:
+      - in: body
+        name: body
+        description: Change Email
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserChangeEmail'
+      responses:
+        "200":
+          description: '{string} email change success!'
+        "403":
+          description: email change failed
+  /email/list:
+    post:
+      tags:
+      - email
+      description: get all the email ids for the user
+      operationId: EmailController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /field/list:
+    post:
+      tags:
+      - field
+      description: get the list of fiels for specific type
+      operationId: FieldController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.FieldType'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /file/upload:
+    post:
+      tags:
+      - file
+      description: Register New User
+      operationId: FileController.RegisterUser
+      parameters:
+      - in: query
+        name: DataId
+        description: The Id for the data group
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: FieldId
+        description: The Id for the Field
+        required: true
+        type: integer
+        format: int64
+      - in: formData
+        name: File
+        description: File
+        required: true
+        type: file
+      - in: query
+        name: Token
+        description: The generated token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: body is empty
+  /order/alllist:
+    post:
+      tags:
+      - order
+      description: get all the buy orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestOrderList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/deletebuy:
+    delete:
+      tags:
+      - order
+      description: delete the user
+      operationId: OrderController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.OrderId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /order/deletesell:
+    delete:
+      tags:
+      - order
+      description: delete the user
+      operationId: OrderController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.OrderId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /order/limitbuy:
+    post:
+      tags:
+      - order
+      description: Place new buy order
+      operationId: OrderController.OrderBuy
+      parameters:
+      - in: body
+        name: body
+        description: Buy Order Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.OrderBuy'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/limitsell:
+    post:
+      tags:
+      - order
+      description: Place new sell order
+      operationId: OrderController.OrderSell
+      parameters:
+      - in: body
+        name: body
+        description: Sell Order Details
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderSell'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/listbuy:
+    post:
+      tags:
+      - order
+      description: get all the buy orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestOrderList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/listsell:
+    post:
+      tags:
+      - order
+      description: get all the sell orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestOrderList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/mycurrencypair:
+    post:
+      tags:
+      - order
+      description: get all the buy orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/mylistbuy:
+    post:
+      tags:
+      - order
+      description: get all the buy orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestOrderList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/mylistsell:
+    post:
+      tags:
+      - order
+      description: get all the sell orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestOrderList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/updatemycurrencypair:
+    post:
+      tags:
+      - order
+      description: get all the buy orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestOrderList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /order/updatemyorderwallet:
+    post:
+      tags:
+      - order
+      description: get all the buy orders for the user
+      operationId: OrderController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.OrderWalletUpdate'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /password/change:
+    post:
+      tags:
+      - password
+      description: change password for the user
+      operationId: PasswordController.ChangePassword
+      parameters:
+      - in: body
+        name: body
+        description: Change Password
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserChangePassword'
+      responses:
+        "200":
+          description: '{string} password change success!'
+        "403":
+          description: password change failed
+  /payee/add:
+    post:
+      tags:
+      - payee
+      description: Register New User
+      operationId: PayeeController.RegisterWallet
+      parameters:
+      - in: body
+        name: body
+        description: Wallet Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.PayeeDetails'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /payee/delete:
+    delete:
+      tags:
+      - payee
+      description: delete the user
+      operationId: PayeeController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Wallet Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.PayeeMasterId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /payee/list:
+    post:
+      tags:
+      - payee
+      description: get all the orders for the user
+      operationId: PayeeController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /payee/listall:
+    post:
+      tags:
+      - payee
+      description: Register New User
+      operationId: PayeeController.RegisterTransfer
+      parameters:
+      - in: body
+        name: body
+        description: Transfer Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.TransferSearchAll'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /trade/history:
+    post:
+      tags:
+      - trade
+      description: Place new buy order
+      operationId: TradeHistoryController.Trade History
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.TradeHistory'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /transfer/add:
+    post:
+      tags:
+      - transfer
+      description: Register New User
+      operationId: TransferController.RegisterTransfer
+      parameters:
+      - in: body
+        name: body
+        description: Transfer Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.TransferAdd'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /transfer/delete:
+    delete:
+      tags:
+      - transfer
+      description: delete the user
+      operationId: TransferController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Transfer Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.TransferId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /transfer/list:
+    post:
+      tags:
+      - transfer
+      description: get all the orders for the user
+      operationId: TransferController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.TransferSearchAll'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /user/auth:
+    post:
+      tags:
+      - user
+      description: Authenticates the user into the system
+      operationId: UserController.Authenticate
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{string} login success'
+        "403":
+          description: user not exist
+  /user/changename:
+    post:
+      tags:
+      - user
+      description: change name for the user (allowed only once). Please make sure
+        this matches your bank account. You will not be able to change the name a
+        second time.
+      operationId: UserController.ChangeName
+      parameters:
+      - in: body
+        name: body
+        description: Change Name
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserChangeName'
+      responses:
+        "200":
+          description: '{string} password change success!'
+        "403":
+          description: password change failed
+  /user/changeusername:
+    post:
+      tags:
+      - user
+      description: change Username for the user
+      operationId: UserController.ChangeUsername
+      parameters:
+      - in: body
+        name: body
+        description: Change Username
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserChangeUsername'
+      responses:
+        "200":
+          description: '{string} password change success!'
+        "403":
+          description: password change failed
+  /user/delete:
+    delete:
+      tags:
+      - user
+      description: delete the user
+      operationId: UserController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /user/isuniqueusername:
+    post:
+      tags:
+      - user
+      description: Logs out current logged in user session
+      operationId: UserController.IsUniqueUsername
+      parameters:
+      - in: body
+        name: body
+        description: Username for uniqueness
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserUsername'
+      responses:
+        "200":
+          description: '{string} unique username'
+  /user/login:
+    post:
+      tags:
+      - user
+      description: Logs user into the system
+      operationId: UserController.Login
+      parameters:
+      - in: body
+        name: body
+        description: Login Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserLogin'
+      responses:
+        "200":
+          description: '{string} login success'
+        "403":
+          description: user not exist
+  /user/logout:
+    post:
+      tags:
+      - user
+      description: Logs out current logged in user session
+      operationId: UserController.logout
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{string} logout success'
+  /user/register:
+    post:
+      tags:
+      - user
+      description: Register New User
+      operationId: UserController.RegisterUser
+      parameters:
+      - in: body
+        name: body
+        description: New User Registration Data
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserAdd'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: body is empty
+  /user/token:
+    get:
+      tags:
+      - user
+      description: Issue a new token
+      operationId: UserController.IssueToken
+      responses:
+        "200":
+          description: '{user} models.User'
+        "403":
+          description: :uid is empty
+  /usercountry/add:
+    post:
+      tags:
+      - usercountry
+      description: Add user country for the user
+      operationId: UserCountryController.Add
+      parameters:
+      - in: body
+        name: body
+        description: Add User Country
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserCountryIdAdd'
+      responses:
+        "200":
+          description: '{string} user country added successfully!'
+        "403":
+          description: user country add failed
+  /usercountry/delete:
+    delete:
+      tags:
+      - usercountry
+      description: delete the user
+      operationId: UserCountryController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserCountryId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /usercountry/list:
+    post:
+      tags:
+      - usercountry
+      description: get the list of countries
+      operationId: UserCountryController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.RequestCountryList'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /wallet/add:
+    post:
+      tags:
+      - wallet
+      description: Register New User
+      operationId: WalletController.RegisterWallet
+      parameters:
+      - in: body
+        name: body
+        description: Wallet Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.WalletDetails'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+  /wallet/delete:
+    delete:
+      tags:
+      - wallet
+      description: delete the user
+      operationId: WalletController.Delete
+      parameters:
+      - in: body
+        name: body
+        description: Wallet Details
+        required: true
+        schema:
+          $ref: '#/definitions/user.WalletMasterId'
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: uid is empty
+  /wallet/list:
+    post:
+      tags:
+      - wallet
+      description: get all the orders for the user
+      operationId: WalletController.GetAll
+      parameters:
+      - in: body
+        name: body
+        description: Token for Authentication
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserToken'
+      responses:
+        "200":
+          description: '{int} response'
+        "403":
+          description: Authentication Failed
+definitions:
+  models.DataCategory:
+    title: DataCategory
+    type: object
+    properties:
+      CreatedAt:
+        type: string
+        format: string
+      DataId:
+        type: integer
+        format: int64
+      DeletedAt:
+        type: string
+        format: string
+      FieldCategoryId:
+        type: integer
+        format: int64
+      FieldId:
+        type: integer
+        format: int64
+      Id:
+        type: integer
+        format: int64
+      UpdatedAt:
+        type: string
+        format: string
+  models.DataText:
+    title: DataText
+    type: object
+    properties:
+      CreatedAt:
+        type: string
+        format: string
+      DataId:
+        type: integer
+        format: int64
+      DeletedAt:
+        type: string
+        format: string
+      FieldId:
+        type: integer
+        format: int64
+      Id:
+        type: integer
+        format: int64
+      Text:
+        type: string
+      UpdatedAt:
+        type: string
+        format: string
+  models.OrderSell:
+    title: OrderSell
+    type: object
+    properties:
+      Amount:
+        type: number
+        format: double
+      CreatedAt:
+        type: string
+        format: string
+      CurrencyId:
+        type: integer
+        format: int64
+      CurrencyWalletId:
+        type: integer
+        format: int64
+      Id:
+        type: integer
+        format: int64
+      Lock:
+        type: boolean
+      Rate:
+        type: number
+        format: double
+      RateCurrencyId:
+        type: integer
+        format: int64
+      RateCurrencyWalletId:
+        type: integer
+        format: int64
+      TotalAmount:
+        type: number
+        format: double
+      UserId:
+        type: integer
+        format: int64
+  user.DataFile:
+    title: DataFile
+    type: object
+    properties:
+      Extension:
+        type: string
+      FieldId:
+        type: integer
+        format: int64
+      Name:
+        type: string
+  user.DataId:
+    title: DataId
+    type: object
+    properties:
+      Id:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.DataUpload:
+    title: DataUpload
+    type: object
+    properties:
+      Active:
+        type: boolean
+      CountryId:
+        type: integer
+        format: int64
+      DataCategory:
+        type: array
+        items:
+          $ref: '#/definitions/user.DataCategory'
+      DataFile:
+        type: array
+        items:
+          $ref: '#/definitions/user.DataFile'
+      DataText:
+        type: array
+        items:
+          $ref: '#/definitions/user.DataText'
+      FieldType:
+        type: string
+      Nickname:
+        type: string
+      Primary:
+        type: boolean
+      Token:
+        type: string
+  user.FieldType:
+    title: FieldType
+    type: object
+    properties:
+      RequestField:
+        $ref: '#/definitions/user.RequestField'
+      Token:
+        type: string
+  user.OrderBuy:
+    title: OrderBuy
+    type: object
+    properties:
+      Amount:
+        type: number
+        format: double
+      CurrencyId:
+        type: integer
+        format: int64
+      CurrencyWalletId:
+        type: integer
+        format: int64
+      Rate:
+        type: number
+        format: double
+      RateCurrencyId:
+        type: integer
+        format: int64
+      RateCurrencyWalletId:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.OrderId:
+    title: OrderId
+    type: object
+    properties:
+      CurrencyId:
+        type: integer
+        format: int64
+      OrderId:
+        type: integer
+        format: int64
+      RateCurrencyId:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.OrderWalletUpdate:
+    title: OrderWalletUpdate
+    type: object
+    properties:
+      CurrencyId:
+        type: integer
+        format: int64
+      CurrencyWalletId:
+        type: integer
+        format: int64
+      RateCurrencyId:
+        type: integer
+        format: int64
+      RateCurrencyWalletId:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.PayeeDetails:
+    title: PayeeDetails
+    type: object
+    properties:
+      Address:
+        type: string
+      CurrencyId:
+        type: integer
+        format: int64
+      Email:
+        type: string
+      Name:
+        type: string
+      Nickname:
+        type: string
+      Token:
+        type: string
+  user.PayeeMasterId:
+    title: PayeeMasterId
+    type: object
+    properties:
+      Id:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.RequestCountries:
+    title: RequestCountries
+    type: object
+    properties:
+      Eligible:
+        type: string
+      OnlyMine:
+        type: string
+  user.RequestCountryList:
+    title: RequestCountryList
+    type: object
+    properties:
+      RequestCountries:
+        $ref: '#/definitions/user.RequestCountries'
+      Token:
+        type: string
+  user.RequestField:
+    title: RequestField
+    type: object
+    properties:
+      CountryId:
+        type: integer
+        format: int64
+      FieldType:
+        type: string
+  user.RequestOrderList:
+    title: RequestOrderList
+    type: object
+    properties:
+      CurrencyId:
+        type: integer
+        format: int64
+      RateCurrencyId:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.TradeHistory:
+    title: TradeHistory
+    type: object
+    properties:
+      CurrencyId:
+        type: integer
+        format: int64
+      Duration:
+        type: string
+      RateCurrencyId:
+        type: integer
+        format: int64
+      Token:
+        type: string
+  user.TransferAdd:
+    title: TransferAdd
+    type: object
+    properties:
+      Amount:
+        type: number
+        format: double
+      FromWalletId:
+        type: integer
+        format: int64
+      ToDataId:
+        type: integer
+        format: int64
+      ToPayeeId:
+        type: integer
+        format: int64
+      ToWalletId:
+        type: integer
+        format: int64
+      Token:
+        type: string
+      TransferSearch:
+        $ref: '#/definitions/user.TransferSearch'
+  user.TransferId:
+    title: TransferId
+    type: object
+    properties:
+      Id:
+        type: integer
+        format: int64
+      Token:
+        type: string
+      TransferSearch:
+        $ref: '#/definitions/user.TransferSearch'
+  user.TransferSearch:
+    title: TransferSearch
+    type: object
+    properties:
+      CurrencyId:
+        type: integer
+        format: int64
+      CurrencyType:
+        type: string
+      TransferType:
+        type: string
+  user.TransferSearchAll:
+    title: TransferSearchAll
+    type: object
+    properties:
+      Token:
+        type: string
+      TransferSearch:
+        $ref: '#/definitions/user.TransferSearch'
+  user.UserAdd:
+    title: UserAdd
+    type: object
+    properties:
+      Email:
+        type: string
+      Name:
+        type: string
+      Password:
+        type: string
+      Token:
+        type: string
+      Username:
+        type: string
+  user.UserChangeEmail:
+    title: UserChangeEmail
+    type: object
+    properties:
+      Id:
+        type: integer
+        format: int64
+      NewEmail:
+        type: string
+      Token:
+        type: string
+  user.UserChangeName:
+    title: UserChangeName
+    type: object
+    properties:
+      CurrentPassword:
+        type: string
+      NewName:
+        type: string
+      Token:
+        type: string
+  user.UserChangePassword:
+    title: UserChangePassword
+    type: object
+    properties:
+      CurrentPassword:
+        type: string
+      NewPassword:
+        type: string
+      Token:
+        type: string
+  user.UserChangeUsername:
+    title: UserChangeUsername
+    type: object
+    properties:
+      CurrentPassword:
+        type: string
+      NewUsername:
+        type: string
+      Token:
+        type: string
+  user.UserCountryId:
+    title: UserCountryId
+    type: object
+    properties:
+      Id:
+        type: integer
+        format: int64
+      RequestCountries:
+        $ref: '#/definitions/user.RequestCountries'
+      Token:
+        type: string
+  user.UserCountryIdAdd:
+    title: UserCountryIdAdd
+    type: object
+    properties:
+      CountryId:
+        type: integer
+        format: int64
+      RequestCountries:
+        $ref: '#/definitions/user.RequestCountries'
+      Token:
+        type: string
+  user.UserLogin:
+    title: UserLogin
+    type: object
+    properties:
+      Password:
+        type: string
+      Token:
+        type: string
+      Username:
+        type: string
+  user.UserToken:
+    title: UserToken
+    type: object
+    properties:
+      Token:
+        type: string
+  user.UserUsername:
+    title: UserUsername
+    type: object
+    properties:
+      Token:
+        type: string
+      Username:
+        type: string
+  user.WalletDetails:
+    title: WalletDetails
+    type: object
+    properties:
+      CurrencyId:
+        type: integer
+        format: int64
+      Nickname:
+        type: string
+      Primary:
+        type: boolean
+      Token:
+        type: string
+  user.WalletMasterId:
+    title: WalletMasterId
+    type: object
+    properties:
+      Id:
+        type: integer
+        format: int64
+      Token:
+        type: string

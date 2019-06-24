@@ -1,0 +1,3150 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.3
+-- Dumped by pg_dump version 9.6.3
+
+-- Started on 2017-08-11 20:23:04 EDT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 1 (class 3079 OID 12655)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2833 (class 0 OID 0)
+-- Dependencies: 1
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 543 (class 1247 OID 16386)
+-- Name: admin_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE admin_type AS ENUM (
+    'SUPER_ADMIN',
+    'ADMIN',
+    'SUPPORT'
+);
+
+
+ALTER TYPE admin_type OWNER TO postgres;
+
+--
+-- TOC entry 546 (class 1247 OID 16394)
+-- Name: all_currency; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE all_currency AS ENUM (
+    'BTC',
+    'INR',
+    'ETH',
+    'CAD'
+);
+
+
+ALTER TYPE all_currency OWNER TO postgres;
+
+--
+-- TOC entry 549 (class 1247 OID 16400)
+-- Name: buy_sell; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE buy_sell AS ENUM (
+    'BUY',
+    'SELL'
+);
+
+
+ALTER TYPE buy_sell OWNER TO postgres;
+
+--
+-- TOC entry 631 (class 1247 OID 16406)
+-- Name: crypto_currency; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE crypto_currency AS ENUM (
+    'BTC',
+    'ETH'
+);
+
+
+ALTER TYPE crypto_currency OWNER TO postgres;
+
+--
+-- TOC entry 785 (class 1247 OID 17409)
+-- Name: currency_pair_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE currency_pair_type AS ENUM (
+    'FIAT_TO_FIAT',
+    'FIAT_TO_CRYPTO',
+    'CRYPTO_TO_FIAT',
+    'CRYPTO_TO_CRYPTO'
+);
+
+
+ALTER TYPE currency_pair_type OWNER TO postgres;
+
+--
+-- TOC entry 767 (class 1247 OID 17334)
+-- Name: currency_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE currency_type AS ENUM (
+    'FIAT',
+    'CRYPTO'
+);
+
+
+ALTER TYPE currency_type OWNER TO postgres;
+
+--
+-- TOC entry 634 (class 1247 OID 16410)
+-- Name: fiat_currency; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE fiat_currency AS ENUM (
+    'INR',
+    'CAD'
+);
+
+
+ALTER TYPE fiat_currency OWNER TO postgres;
+
+--
+-- TOC entry 637 (class 1247 OID 16414)
+-- Name: field_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE field_type AS ENUM (
+    'BANK',
+    'KYC',
+    'ADDRESS'
+);
+
+
+ALTER TYPE field_type OWNER TO postgres;
+
+--
+-- TOC entry 719 (class 1247 OID 17135)
+-- Name: partial_full; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE partial_full AS ENUM (
+    'PARTIAL',
+    'FULL',
+    'NOT_PROCESSED'
+);
+
+
+ALTER TYPE partial_full OWNER TO postgres;
+
+--
+-- TOC entry 640 (class 1247 OID 16422)
+-- Name: yes_no; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE yes_no AS ENUM (
+    'YES',
+    'NO'
+);
+
+
+ALTER TYPE yes_no OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 187 (class 1259 OID 16427)
+-- Name: address; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE address (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    country_id bigint NOT NULL,
+    nickname character varying(250) NOT NULL,
+    "primary" yes_no NOT NULL,
+    active yes_no NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE address OWNER TO postgres;
+
+--
+-- TOC entry 188 (class 1259 OID 16430)
+-- Name: address_detail; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE address_detail (
+    id bigint NOT NULL,
+    address_id bigint NOT NULL,
+    field_id bigint NOT NULL,
+    value text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE address_detail OWNER TO postgres;
+
+--
+-- TOC entry 189 (class 1259 OID 16436)
+-- Name: address_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE address_detail_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE address_detail_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2834 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: address_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE address_detail_id_seq OWNED BY address_detail.id;
+
+
+--
+-- TOC entry 190 (class 1259 OID 16438)
+-- Name: address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE address_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2835 (class 0 OID 0)
+-- Dependencies: 190
+-- Name: address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE address_id_seq OWNED BY address.id;
+
+
+--
+-- TOC entry 191 (class 1259 OID 16440)
+-- Name: admin; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE admin (
+    id bigint NOT NULL,
+    name character varying(250) NOT NULL,
+    email character varying(250) NOT NULL,
+    password text NOT NULL,
+    type admin_type NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE admin OWNER TO postgres;
+
+--
+-- TOC entry 192 (class 1259 OID 16446)
+-- Name: admin_access; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE admin_access (
+    id bigint NOT NULL,
+    admin_id bigint NOT NULL,
+    access_key character varying(250) NOT NULL,
+    allow yes_no NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE admin_access OWNER TO postgres;
+
+--
+-- TOC entry 193 (class 1259 OID 16449)
+-- Name: admin_access_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE admin_access_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE admin_access_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2836 (class 0 OID 0)
+-- Dependencies: 193
+-- Name: admin_access_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE admin_access_id_seq OWNED BY admin_access.id;
+
+
+--
+-- TOC entry 194 (class 1259 OID 16451)
+-- Name: admin_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE admin_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE admin_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2837 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: admin_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE admin_id_seq OWNED BY admin.id;
+
+
+--
+-- TOC entry 248 (class 1259 OID 17431)
+-- Name: api_key; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE api_key (
+    id bigint NOT NULL,
+    app_name character varying NOT NULL,
+    description text NOT NULL,
+    token text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone,
+    domain_name character varying(250) NOT NULL,
+    ip_address character varying(20) NOT NULL
+);
+
+
+ALTER TABLE api_key OWNER TO postgres;
+
+--
+-- TOC entry 247 (class 1259 OID 17429)
+-- Name: api_key_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE api_key_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE api_key_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2838 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: api_key_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE api_key_id_seq OWNED BY api_key.id;
+
+
+--
+-- TOC entry 195 (class 1259 OID 16453)
+-- Name: auth_token; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE auth_token (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    token text NOT NULL,
+    expiration_time timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE auth_token OWNER TO postgres;
+
+--
+-- TOC entry 196 (class 1259 OID 16459)
+-- Name: auth_token_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE auth_token_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE auth_token_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2839 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: auth_token_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE auth_token_id_seq OWNED BY auth_token.id;
+
+
+--
+-- TOC entry 197 (class 1259 OID 16461)
+-- Name: bank; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE bank (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    nickname character varying(250) NOT NULL,
+    "primary" yes_no NOT NULL,
+    active yes_no,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE bank OWNER TO postgres;
+
+--
+-- TOC entry 198 (class 1259 OID 16464)
+-- Name: bank_detail; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE bank_detail (
+    id bigint NOT NULL,
+    bank_id bigint NOT NULL,
+    field_id bigint NOT NULL,
+    value text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE bank_detail OWNER TO postgres;
+
+--
+-- TOC entry 199 (class 1259 OID 16470)
+-- Name: bank_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE bank_detail_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE bank_detail_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2840 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: bank_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE bank_detail_id_seq OWNED BY bank_detail.id;
+
+
+--
+-- TOC entry 200 (class 1259 OID 16472)
+-- Name: bank_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE bank_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE bank_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2841 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: bank_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE bank_id_seq OWNED BY bank.id;
+
+
+--
+-- TOC entry 201 (class 1259 OID 16474)
+-- Name: country; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE country (
+    id bigint NOT NULL,
+    name character varying(250) NOT NULL,
+    iso_code character varying(20) NOT NULL,
+    dial_code character varying(20) NOT NULL,
+    code character varying(20) NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE country OWNER TO postgres;
+
+--
+-- TOC entry 202 (class 1259 OID 16477)
+-- Name: country_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE country_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE country_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2842 (class 0 OID 0)
+-- Dependencies: 202
+-- Name: country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE country_id_seq OWNED BY country.id;
+
+
+--
+-- TOC entry 244 (class 1259 OID 17341)
+-- Name: currency; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE currency (
+    id bigint NOT NULL,
+    code character varying(20) NOT NULL,
+    name character varying(150) NOT NULL,
+    description character varying(250) NOT NULL,
+    type currency_type NOT NULL,
+    country_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE currency OWNER TO postgres;
+
+--
+-- TOC entry 243 (class 1259 OID 17339)
+-- Name: currency_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE currency_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE currency_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2843 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: currency_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE currency_id_seq OWNED BY currency.id;
+
+
+--
+-- TOC entry 246 (class 1259 OID 17389)
+-- Name: currency_pair; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE currency_pair (
+    id bigint NOT NULL,
+    from_currency_id bigint NOT NULL,
+    to_currency_id bigint NOT NULL,
+    created_at character varying NOT NULL,
+    updated_at character varying NOT NULL,
+    deleted_at character varying,
+    pair_type currency_pair_type NOT NULL,
+    supported yes_no NOT NULL
+);
+
+
+ALTER TABLE currency_pair OWNER TO postgres;
+
+--
+-- TOC entry 245 (class 1259 OID 17387)
+-- Name: currency_pair_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE currency_pair_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE currency_pair_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2844 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: currency_pair_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE currency_pair_id_seq OWNED BY currency_pair.id;
+
+
+--
+-- TOC entry 221 (class 1259 OID 16939)
+-- Name: email; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE email (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    email character varying(250) NOT NULL,
+    "primary" yes_no NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE email OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 16950)
+-- Name: email_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE email_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE email_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2845 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: email_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE email_id_seq OWNED BY email.id;
+
+
+--
+-- TOC entry 205 (class 1259 OID 16487)
+-- Name: field; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE field (
+    id bigint NOT NULL,
+    country_id bigint NOT NULL,
+    name character varying(250) NOT NULL,
+    field_type field_type NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE field OWNER TO postgres;
+
+--
+-- TOC entry 206 (class 1259 OID 16490)
+-- Name: field_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE field_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE field_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2846 (class 0 OID 0)
+-- Dependencies: 206
+-- Name: field_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE field_id_seq OWNED BY field.id;
+
+
+--
+-- TOC entry 232 (class 1259 OID 17237)
+-- Name: global_setting; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE global_setting (
+    id bigint NOT NULL,
+    country_id bigint NOT NULL,
+    key character varying(250) NOT NULL,
+    value text NOT NULL,
+    admin_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE global_setting OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 17235)
+-- Name: global_setting_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE global_setting_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE global_setting_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2847 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: global_setting_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE global_setting_id_seq OWNED BY global_setting.id;
+
+
+--
+-- TOC entry 207 (class 1259 OID 16492)
+-- Name: kyc_detail; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE kyc_detail (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    field_id bigint NOT NULL,
+    value text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE kyc_detail OWNER TO postgres;
+
+--
+-- TOC entry 208 (class 1259 OID 16498)
+-- Name: kyc_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE kyc_detail_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE kyc_detail_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2848 (class 0 OID 0)
+-- Dependencies: 208
+-- Name: kyc_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE kyc_detail_id_seq OWNED BY kyc_detail.id;
+
+
+--
+-- TOC entry 209 (class 1259 OID 16500)
+-- Name: kyc_document; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE kyc_document (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    field_id bigint NOT NULL,
+    value text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE kyc_document OWNER TO postgres;
+
+--
+-- TOC entry 210 (class 1259 OID 16506)
+-- Name: kyc_document_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE kyc_document_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE kyc_document_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2849 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: kyc_document_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE kyc_document_id_seq OWNED BY kyc_document.id;
+
+
+--
+-- TOC entry 211 (class 1259 OID 16508)
+-- Name: mobile; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE mobile (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    number character varying(20) NOT NULL,
+    "primary" yes_no NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE mobile OWNER TO postgres;
+
+--
+-- TOC entry 212 (class 1259 OID 16511)
+-- Name: mobile_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE mobile_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE mobile_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2850 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: mobile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE mobile_id_seq OWNED BY mobile.id;
+
+
+--
+-- TOC entry 213 (class 1259 OID 16513)
+-- Name: order; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "order" (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    rate double precision NOT NULL,
+    amount double precision NOT NULL,
+    order_type buy_sell NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone,
+    processed_at timestamp with time zone,
+    processed_type partial_full,
+    currency_id bigint NOT NULL,
+    rate_currency_id bigint NOT NULL
+);
+
+
+ALTER TABLE "order" OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1259 OID 16516)
+-- Name: order_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE order_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE order_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2851 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: order_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE order_id_seq OWNED BY "order".id;
+
+
+--
+-- TOC entry 228 (class 1259 OID 17146)
+-- Name: order_partial; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE order_partial (
+    id bigint NOT NULL,
+    parent_order_id bigint NOT NULL,
+    child_order_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE order_partial OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 17144)
+-- Name: order_partial_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE order_partial_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE order_partial_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2852 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: order_partial_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE order_partial_id_seq OWNED BY order_partial.id;
+
+
+--
+-- TOC entry 224 (class 1259 OID 17016)
+-- Name: password; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE password (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    password text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE password OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 16518)
+-- Name: transaction; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transaction (
+    id bigint NOT NULL,
+    order_id bigint NOT NULL,
+    from_user bigint NOT NULL,
+    to_user bigint NOT NULL,
+    amount double precision NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone,
+    currency_id bigint
+);
+
+
+ALTER TABLE transaction OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 16521)
+-- Name: transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transaction_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transaction_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2853 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transaction_id_seq OWNED BY transaction.id;
+
+
+--
+-- TOC entry 238 (class 1259 OID 17288)
+-- Name: transfer_bank; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transfer_bank (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    nickname character varying(250) NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE transfer_bank OWNER TO postgres;
+
+--
+-- TOC entry 240 (class 1259 OID 17301)
+-- Name: transfer_bank_detail; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transfer_bank_detail (
+    id bigint NOT NULL,
+    transfer_bank_id bigint NOT NULL,
+    field_id bigint NOT NULL,
+    value text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE transfer_bank_detail OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 17299)
+-- Name: transfer_bank_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transfer_bank_detail_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transfer_bank_detail_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2854 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: transfer_bank_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transfer_bank_detail_id_seq OWNED BY transfer_bank_detail.id;
+
+
+--
+-- TOC entry 237 (class 1259 OID 17286)
+-- Name: transfer_bank_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transfer_bank_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transfer_bank_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2855 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: transfer_bank_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transfer_bank_id_seq OWNED BY transfer_bank.id;
+
+
+--
+-- TOC entry 242 (class 1259 OID 17317)
+-- Name: transfer_bank_map; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transfer_bank_map (
+    id bigint NOT NULL,
+    transfer_request_id bigint NOT NULL,
+    transfer_bank_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE transfer_bank_map OWNER TO postgres;
+
+--
+-- TOC entry 241 (class 1259 OID 17315)
+-- Name: transfer_bank_map_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transfer_bank_map_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transfer_bank_map_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2856 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: transfer_bank_map_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transfer_bank_map_id_seq OWNED BY transfer_bank_map.id;
+
+
+--
+-- TOC entry 234 (class 1259 OID 17248)
+-- Name: transfer_crypto; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transfer_crypto (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    address text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone,
+    nickname character varying(250) NOT NULL,
+    currency_id bigint NOT NULL
+);
+
+
+ALTER TABLE transfer_crypto OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 17246)
+-- Name: transfer_crypto_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transfer_crypto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transfer_crypto_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2857 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: transfer_crypto_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transfer_crypto_id_seq OWNED BY transfer_crypto.id;
+
+
+--
+-- TOC entry 236 (class 1259 OID 17265)
+-- Name: transfer_crypto_map; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transfer_crypto_map (
+    id bigint NOT NULL,
+    transfer_request_id bigint NOT NULL,
+    transfer_crypto_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE transfer_crypto_map OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 17263)
+-- Name: transfer_crypto_map_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transfer_crypto_map_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transfer_crypto_map_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2858 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: transfer_crypto_map_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transfer_crypto_map_id_seq OWNED BY transfer_crypto_map.id;
+
+
+--
+-- TOC entry 230 (class 1259 OID 17224)
+-- Name: transfer_request; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE transfer_request (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    amount double precision NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    processed_at timestamp with time zone,
+    deleted_at timestamp with time zone,
+    currency_id bigint NOT NULL
+);
+
+
+ALTER TABLE transfer_request OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 17222)
+-- Name: transfer_request_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE transfer_request_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transfer_request_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2859 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: transfer_request_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE transfer_request_id_seq OWNED BY transfer_request.id;
+
+
+--
+-- TOC entry 217 (class 1259 OID 16523)
+-- Name: user; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "user" (
+    id bigint NOT NULL,
+    name character varying(250) NOT NULL,
+    username character varying(250) NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone,
+    edit_name_times integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE "user" OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 16529)
+-- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE user_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2860 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE user_id_seq OWNED BY "user".id;
+
+
+--
+-- TOC entry 223 (class 1259 OID 17014)
+-- Name: user_password_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE user_password_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE user_password_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2861 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: user_password_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE user_password_id_seq OWNED BY password.id;
+
+
+--
+-- TOC entry 226 (class 1259 OID 17027)
+-- Name: user_setting; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE user_setting (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    key character varying(250) NOT NULL,
+    value text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE user_setting OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 17025)
+-- Name: user_setting_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE user_setting_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE user_setting_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2862 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: user_setting_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE user_setting_id_seq OWNED BY user_setting.id;
+
+
+--
+-- TOC entry 219 (class 1259 OID 16531)
+-- Name: wallet; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE wallet (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    amount double precision NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone,
+    nickname character varying(250) NOT NULL,
+    amount_locked double precision NOT NULL,
+    "primary" yes_no NOT NULL,
+    currency_id bigint
+);
+
+
+ALTER TABLE wallet OWNER TO postgres;
+
+--
+-- TOC entry 203 (class 1259 OID 16479)
+-- Name: wallet_address; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE wallet_address (
+    id bigint NOT NULL,
+    wallet_id bigint NOT NULL,
+    address text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE wallet_address OWNER TO postgres;
+
+--
+-- TOC entry 204 (class 1259 OID 16485)
+-- Name: wallet_address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE wallet_address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE wallet_address_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2863 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: wallet_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE wallet_address_id_seq OWNED BY wallet_address.id;
+
+
+--
+-- TOC entry 220 (class 1259 OID 16534)
+-- Name: wallet_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE wallet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE wallet_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2864 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: wallet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE wallet_id_seq OWNED BY wallet.id;
+
+
+--
+-- TOC entry 250 (class 1259 OID 17442)
+-- Name: wallet_password; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE wallet_password (
+    id bigint NOT NULL,
+    wallet_id bigint NOT NULL,
+    password text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE wallet_password OWNER TO postgres;
+
+--
+-- TOC entry 249 (class 1259 OID 17440)
+-- Name: wallet_password_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE wallet_password_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE wallet_password_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2865 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: wallet_password_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE wallet_password_id_seq OWNED BY wallet_password.id;
+
+
+--
+-- TOC entry 2503 (class 2604 OID 16536)
+-- Name: address id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address ALTER COLUMN id SET DEFAULT nextval('address_id_seq'::regclass);
+
+
+--
+-- TOC entry 2504 (class 2604 OID 16537)
+-- Name: address_detail id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address_detail ALTER COLUMN id SET DEFAULT nextval('address_detail_id_seq'::regclass);
+
+
+--
+-- TOC entry 2505 (class 2604 OID 16538)
+-- Name: admin id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admin ALTER COLUMN id SET DEFAULT nextval('admin_id_seq'::regclass);
+
+
+--
+-- TOC entry 2506 (class 2604 OID 16539)
+-- Name: admin_access id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admin_access ALTER COLUMN id SET DEFAULT nextval('admin_access_id_seq'::regclass);
+
+
+--
+-- TOC entry 2534 (class 2604 OID 17434)
+-- Name: api_key id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY api_key ALTER COLUMN id SET DEFAULT nextval('api_key_id_seq'::regclass);
+
+
+--
+-- TOC entry 2507 (class 2604 OID 16540)
+-- Name: auth_token id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY auth_token ALTER COLUMN id SET DEFAULT nextval('auth_token_id_seq'::regclass);
+
+
+--
+-- TOC entry 2508 (class 2604 OID 16541)
+-- Name: bank id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank ALTER COLUMN id SET DEFAULT nextval('bank_id_seq'::regclass);
+
+
+--
+-- TOC entry 2509 (class 2604 OID 16542)
+-- Name: bank_detail id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank_detail ALTER COLUMN id SET DEFAULT nextval('bank_detail_id_seq'::regclass);
+
+
+--
+-- TOC entry 2510 (class 2604 OID 16543)
+-- Name: country id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY country ALTER COLUMN id SET DEFAULT nextval('country_id_seq'::regclass);
+
+
+--
+-- TOC entry 2532 (class 2604 OID 17344)
+-- Name: currency id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY currency ALTER COLUMN id SET DEFAULT nextval('currency_id_seq'::regclass);
+
+
+--
+-- TOC entry 2533 (class 2604 OID 17392)
+-- Name: currency_pair id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY currency_pair ALTER COLUMN id SET DEFAULT nextval('currency_pair_id_seq'::regclass);
+
+
+--
+-- TOC entry 2521 (class 2604 OID 16952)
+-- Name: email id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY email ALTER COLUMN id SET DEFAULT nextval('email_id_seq'::regclass);
+
+
+--
+-- TOC entry 2512 (class 2604 OID 16545)
+-- Name: field id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY field ALTER COLUMN id SET DEFAULT nextval('field_id_seq'::regclass);
+
+
+--
+-- TOC entry 2526 (class 2604 OID 17240)
+-- Name: global_setting id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY global_setting ALTER COLUMN id SET DEFAULT nextval('global_setting_id_seq'::regclass);
+
+
+--
+-- TOC entry 2513 (class 2604 OID 16546)
+-- Name: kyc_detail id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_detail ALTER COLUMN id SET DEFAULT nextval('kyc_detail_id_seq'::regclass);
+
+
+--
+-- TOC entry 2514 (class 2604 OID 16547)
+-- Name: kyc_document id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_document ALTER COLUMN id SET DEFAULT nextval('kyc_document_id_seq'::regclass);
+
+
+--
+-- TOC entry 2515 (class 2604 OID 16548)
+-- Name: mobile id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY mobile ALTER COLUMN id SET DEFAULT nextval('mobile_id_seq'::regclass);
+
+
+--
+-- TOC entry 2516 (class 2604 OID 16549)
+-- Name: order id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "order" ALTER COLUMN id SET DEFAULT nextval('order_id_seq'::regclass);
+
+
+--
+-- TOC entry 2524 (class 2604 OID 17149)
+-- Name: order_partial id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY order_partial ALTER COLUMN id SET DEFAULT nextval('order_partial_id_seq'::regclass);
+
+
+--
+-- TOC entry 2522 (class 2604 OID 17019)
+-- Name: password id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY password ALTER COLUMN id SET DEFAULT nextval('user_password_id_seq'::regclass);
+
+
+--
+-- TOC entry 2517 (class 2604 OID 16550)
+-- Name: transaction id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transaction ALTER COLUMN id SET DEFAULT nextval('transaction_id_seq'::regclass);
+
+
+--
+-- TOC entry 2529 (class 2604 OID 17291)
+-- Name: transfer_bank id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank ALTER COLUMN id SET DEFAULT nextval('transfer_bank_id_seq'::regclass);
+
+
+--
+-- TOC entry 2530 (class 2604 OID 17304)
+-- Name: transfer_bank_detail id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_detail ALTER COLUMN id SET DEFAULT nextval('transfer_bank_detail_id_seq'::regclass);
+
+
+--
+-- TOC entry 2531 (class 2604 OID 17320)
+-- Name: transfer_bank_map id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_map ALTER COLUMN id SET DEFAULT nextval('transfer_bank_map_id_seq'::regclass);
+
+
+--
+-- TOC entry 2527 (class 2604 OID 17251)
+-- Name: transfer_crypto id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto ALTER COLUMN id SET DEFAULT nextval('transfer_crypto_id_seq'::regclass);
+
+
+--
+-- TOC entry 2528 (class 2604 OID 17268)
+-- Name: transfer_crypto_map id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto_map ALTER COLUMN id SET DEFAULT nextval('transfer_crypto_map_id_seq'::regclass);
+
+
+--
+-- TOC entry 2525 (class 2604 OID 17227)
+-- Name: transfer_request id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_request ALTER COLUMN id SET DEFAULT nextval('transfer_request_id_seq'::regclass);
+
+
+--
+-- TOC entry 2518 (class 2604 OID 16551)
+-- Name: user id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq'::regclass);
+
+
+--
+-- TOC entry 2523 (class 2604 OID 17030)
+-- Name: user_setting id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY user_setting ALTER COLUMN id SET DEFAULT nextval('user_setting_id_seq'::regclass);
+
+
+--
+-- TOC entry 2520 (class 2604 OID 16552)
+-- Name: wallet id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet ALTER COLUMN id SET DEFAULT nextval('wallet_id_seq'::regclass);
+
+
+--
+-- TOC entry 2511 (class 2604 OID 16544)
+-- Name: wallet_address id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet_address ALTER COLUMN id SET DEFAULT nextval('wallet_address_id_seq'::regclass);
+
+
+--
+-- TOC entry 2535 (class 2604 OID 17445)
+-- Name: wallet_password id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet_password ALTER COLUMN id SET DEFAULT nextval('wallet_password_id_seq'::regclass);
+
+
+--
+-- TOC entry 2763 (class 0 OID 16427)
+-- Dependencies: 187
+-- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY address (id, user_id, country_id, nickname, "primary", active, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2764 (class 0 OID 16430)
+-- Dependencies: 188
+-- Data for Name: address_detail; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY address_detail (id, address_id, field_id, value, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2866 (class 0 OID 0)
+-- Dependencies: 189
+-- Name: address_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('address_detail_id_seq', 1, false);
+
+
+--
+-- TOC entry 2867 (class 0 OID 0)
+-- Dependencies: 190
+-- Name: address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('address_id_seq', 1, false);
+
+
+--
+-- TOC entry 2767 (class 0 OID 16440)
+-- Dependencies: 191
+-- Data for Name: admin; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY admin (id, name, email, password, type, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2768 (class 0 OID 16446)
+-- Dependencies: 192
+-- Data for Name: admin_access; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY admin_access (id, admin_id, access_key, allow, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2868 (class 0 OID 0)
+-- Dependencies: 193
+-- Name: admin_access_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('admin_access_id_seq', 1, false);
+
+
+--
+-- TOC entry 2869 (class 0 OID 0)
+-- Dependencies: 194
+-- Name: admin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('admin_id_seq', 1, false);
+
+
+--
+-- TOC entry 2824 (class 0 OID 17431)
+-- Dependencies: 248
+-- Data for Name: api_key; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY api_key (id, app_name, description, token, created_at, updated_at, deleted_at, domain_name, ip_address) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2870 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: api_key_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('api_key_id_seq', 1, false);
+
+
+--
+-- TOC entry 2771 (class 0 OID 16453)
+-- Dependencies: 195
+-- Data for Name: auth_token; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY auth_token (id, user_id, token, expiration_time, created_at, updated_at, deleted_at) FROM stdin;
+11	11	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI1Nzc2MjQsImlhdCI6MTUwMjQ5MTIyNH0.YGAcGO5Ei_IEY9RXGZmaAuY4IsthAHmkmDmdr75vv7HhapI9f_CKCggKYnzqsiSRvAZ_5IVUu1vKi1AK3k2_Bq441twxQDg54RhVbxswFOL8LyTCQWneETBiYezwoXVBc9yDqzTC2O_NdP7XiBA1wCRSQZWw8apy6LM8RJk_km58NDooDI_ZQhYofC8h8j-THgo0-v5SmsK6TSiwbG-TuHVjs-fC_rOzDy8VXdN_fXmlXGi0fybwCMZoDs9HD527ADP9O99y5enrqDA4HQMSu0cJxrcIF4h-ixRwuuvnhYMmNQuiOE_slTNCELeNMvOR_5WG0TK3a9_FI8Cjt_TWFQ	2017-08-12 18:40:24.434588-04	2017-08-10 17:30:45.231252-04	2017-08-11 18:40:24.438238-04	\N
+10	10	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDEzMDAzMTQsImlhdCI6MTUwMTIxMzkxNH0.CeD71x9TU7d5gY2X2LL70sLpqD0yXO2qGnNfoUFggXZ_CCQH41RzB-7KgFoWb7kjskGYT2UeLFXNcEjAjqDqDRZgZnPhwcl56LDZxsM4RZlV37fPC4qY5rJsfAeWqMdqJ3vaTBkYycV9eJe-97rdWKLEIpAgPdSPtnaFRpZrOieHm2PxCAv8GEwnv4NIzqkQPcvwvTd8x2lGlDLKPoo-2dTsG4nK1Aeh-16m8BQDiwcuV-nv01Ui0uJ5Mp9SiXrAvHpwWKgNg5Lv9YQImb046VaQI7hN7D9LM4dMkFCksG_vehMSG8Jv2vXAkXSBXrv-JJV0MobktmN6ZSJzeUF-6g	2017-07-28 23:51:54.408568-04	2017-07-23 20:46:25.051647-04	2017-07-27 23:51:54.412667-04	\N
+9	9	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDU1MDMsImlhdCI6MTUwMjMxOTEwM30.j2Vc0Jfvej6bXhNB-YI3IXf66psNjQUa96BWlt77poRBcsWDc-TmkxdLgAAVau5PlbN_DxabN0qG_22iZ5dqq0NYuauFNcdf3l1iCoE8obzJH00Cm2gzLVTBEEIzsVcWQ7LH14_KVxMC4ci30Q05D3tEFvnJ-f-2fAEt9DhH0-WUNk9PfliCHHSDRZ2gaMKV8VjviraS176UFCgar4mKrEUpnCQ6I9-OQRa3P1UCEHYMFzplqVexxpOIVcC9GOeX7K6VWL-sYUfQAIie-WmpTIsaVrGA-Ka_8Au42UKBsEMYrIBZHgasfNdZMc9E6HiJK8VBhV2NqlYrl5501nXM4Q	2017-08-10 18:51:43.530458-04	2017-07-23 20:44:38.254821-04	2017-08-09 18:51:43.534951-04	\N
+12	12	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI1ODMyNDIsImlhdCI6MTUwMjQ5Njg0Mn0.hz5sWhO7_GU6HdqYwCAoMwxH5TGRTdQF-3ynT92vV1sbd0RQuipieu9omx9X8PNsp5yWHOlrhLUze2kW4qCB7G9PCZ7_ZA66i5y72sVHAFMi_ZjDDjkYfkOFXBUWZ1dwi-0SIhGFdyD7QLsE-IIUxt6VLsQ_d8bNw84QDsCXfFjO4pEg778oHDyDUH52UTRJHVmwlJsD-YIBQRJEbPJO6eppvmkEjKTiqDI32t7lHYGnv_ELJFaAHQ45OknOykbbDKgH2uFmnGtoA5U-fMFGI6i5xnn38enGfeW82eGYgQwZaZ1R8AmS1a9Tzn7-jcbuFL4R8r3ZepqfeGowEOX-gQ	2017-08-12 20:14:02.576119-04	2017-08-11 00:58:23.536102-04	2017-08-11 20:14:02.581111-04	\N
+\.
+
+
+--
+-- TOC entry 2871 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: auth_token_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('auth_token_id_seq', 12, true);
+
+
+--
+-- TOC entry 2773 (class 0 OID 16461)
+-- Dependencies: 197
+-- Data for Name: bank; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY bank (id, user_id, nickname, "primary", active, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2774 (class 0 OID 16464)
+-- Dependencies: 198
+-- Data for Name: bank_detail; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY bank_detail (id, bank_id, field_id, value, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2872 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: bank_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('bank_detail_id_seq', 1, false);
+
+
+--
+-- TOC entry 2873 (class 0 OID 0)
+-- Dependencies: 200
+-- Name: bank_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('bank_id_seq', 1, false);
+
+
+--
+-- TOC entry 2777 (class 0 OID 16474)
+-- Dependencies: 201
+-- Data for Name: country; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY country (id, name, iso_code, dial_code, code, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2874 (class 0 OID 0)
+-- Dependencies: 202
+-- Name: country_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('country_id_seq', 1, false);
+
+
+--
+-- TOC entry 2820 (class 0 OID 17341)
+-- Dependencies: 244
+-- Data for Name: currency; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY currency (id, code, name, description, type, country_id, created_at, updated_at, deleted_at) FROM stdin;
+1	BTC	Bitcoin	Digital Currency	CRYPTO	0	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N
+2	ETH	Ethereum	Digital Currency	CRYPTO	0	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N
+3	CAD	Canadian Dollar	Fiat Currency	FIAT	0	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N
+\.
+
+
+--
+-- TOC entry 2875 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: currency_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('currency_id_seq', 2, true);
+
+
+--
+-- TOC entry 2822 (class 0 OID 17389)
+-- Dependencies: 246
+-- Data for Name: currency_pair; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY currency_pair (id, from_currency_id, to_currency_id, created_at, updated_at, deleted_at, pair_type, supported) FROM stdin;
+1	1	2	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N	CRYPTO_TO_CRYPTO	YES
+2	2	1	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N	CRYPTO_TO_CRYPTO	YES
+\.
+
+
+--
+-- TOC entry 2876 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: currency_pair_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('currency_pair_id_seq', 1, false);
+
+
+--
+-- TOC entry 2797 (class 0 OID 16939)
+-- Dependencies: 221
+-- Data for Name: email; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY email (id, user_id, email, "primary", created_at, updated_at, deleted_at) FROM stdin;
+9	9	s1@gmail.com	YES	2017-07-23 20:44:38.249528-04	2017-07-23 20:44:38.249528-04	\N
+10	10	s2@gmail.com	YES	2017-07-23 20:46:25.047371-04	2017-07-23 20:46:25.047371-04	\N
+11	11	sukanya@gmail.com	YES	2017-08-10 17:30:45.223409-04	2017-08-10 17:30:45.223409-04	\N
+12	12		YES	2017-08-11 00:58:23.523452-04	2017-08-11 00:58:23.523452-04	\N
+\.
+
+
+--
+-- TOC entry 2877 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: email_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('email_id_seq', 12, true);
+
+
+--
+-- TOC entry 2781 (class 0 OID 16487)
+-- Dependencies: 205
+-- Data for Name: field; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY field (id, country_id, name, field_type, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2878 (class 0 OID 0)
+-- Dependencies: 206
+-- Name: field_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('field_id_seq', 1, false);
+
+
+--
+-- TOC entry 2808 (class 0 OID 17237)
+-- Dependencies: 232
+-- Data for Name: global_setting; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY global_setting (id, country_id, key, value, admin_id, created_at, updated_at, deleted_at) FROM stdin;
+1	0	BTC_MIN_BUY	0.01	1	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N
+\.
+
+
+--
+-- TOC entry 2879 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: global_setting_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('global_setting_id_seq', 1, true);
+
+
+--
+-- TOC entry 2783 (class 0 OID 16492)
+-- Dependencies: 207
+-- Data for Name: kyc_detail; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY kyc_detail (id, user_id, field_id, value, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2880 (class 0 OID 0)
+-- Dependencies: 208
+-- Name: kyc_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('kyc_detail_id_seq', 1, false);
+
+
+--
+-- TOC entry 2785 (class 0 OID 16500)
+-- Dependencies: 209
+-- Data for Name: kyc_document; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY kyc_document (id, user_id, field_id, value, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2881 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: kyc_document_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('kyc_document_id_seq', 1, false);
+
+
+--
+-- TOC entry 2787 (class 0 OID 16508)
+-- Dependencies: 211
+-- Data for Name: mobile; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY mobile (id, user_id, number, "primary", created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2882 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: mobile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('mobile_id_seq', 1, false);
+
+
+--
+-- TOC entry 2789 (class 0 OID 16513)
+-- Dependencies: 213
+-- Data for Name: order; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "order" (id, user_id, rate, amount, order_type, created_at, updated_at, deleted_at, processed_at, processed_type, currency_id, rate_currency_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2883 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: order_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('order_id_seq', 61, true);
+
+
+--
+-- TOC entry 2804 (class 0 OID 17146)
+-- Dependencies: 228
+-- Data for Name: order_partial; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY order_partial (id, parent_order_id, child_order_id, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2884 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: order_partial_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('order_partial_id_seq', 52, true);
+
+
+--
+-- TOC entry 2800 (class 0 OID 17016)
+-- Dependencies: 224
+-- Data for Name: password; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY password (id, user_id, password, created_at, updated_at, deleted_at) FROM stdin;
+7	9	3132333c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2	2017-07-23 20:44:38.248167-04	2017-07-23 20:44:38.248167-04	\N
+8	10	3132333c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2	2017-07-23 20:46:25.046633-04	2017-07-23 20:46:25.046633-04	\N
+9	11	73756b616e79617ed0cae5a6ac875a550273dab3f199e562d2b4c89b7849dfd7e967ddc61222bf138cf2da8ceb54faca7bdce6a3a544e0118b02bfc8afb31eec4e356db72c0db8	2017-08-10 17:30:45.220878-04	2017-08-10 17:30:45.220878-04	\N
+10	12	cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e	2017-08-11 00:58:23.515917-04	2017-08-11 00:58:23.515917-04	\N
+\.
+
+
+--
+-- TOC entry 2791 (class 0 OID 16518)
+-- Dependencies: 215
+-- Data for Name: transaction; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transaction (id, order_id, from_user, to_user, amount, created_at, updated_at, deleted_at, currency_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2885 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transaction_id_seq', 116, true);
+
+
+--
+-- TOC entry 2814 (class 0 OID 17288)
+-- Dependencies: 238
+-- Data for Name: transfer_bank; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transfer_bank (id, user_id, nickname, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2816 (class 0 OID 17301)
+-- Dependencies: 240
+-- Data for Name: transfer_bank_detail; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transfer_bank_detail (id, transfer_bank_id, field_id, value, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2886 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: transfer_bank_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transfer_bank_detail_id_seq', 1, false);
+
+
+--
+-- TOC entry 2887 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: transfer_bank_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transfer_bank_id_seq', 1, false);
+
+
+--
+-- TOC entry 2818 (class 0 OID 17317)
+-- Dependencies: 242
+-- Data for Name: transfer_bank_map; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transfer_bank_map (id, transfer_request_id, transfer_bank_id, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2888 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: transfer_bank_map_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transfer_bank_map_id_seq', 1, false);
+
+
+--
+-- TOC entry 2810 (class 0 OID 17248)
+-- Dependencies: 234
+-- Data for Name: transfer_crypto; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transfer_crypto (id, user_id, address, created_at, updated_at, deleted_at, nickname, currency_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2889 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: transfer_crypto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transfer_crypto_id_seq', 1, false);
+
+
+--
+-- TOC entry 2812 (class 0 OID 17265)
+-- Dependencies: 236
+-- Data for Name: transfer_crypto_map; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transfer_crypto_map (id, transfer_request_id, transfer_crypto_id, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2890 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: transfer_crypto_map_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transfer_crypto_map_id_seq', 1, false);
+
+
+--
+-- TOC entry 2806 (class 0 OID 17224)
+-- Dependencies: 230
+-- Data for Name: transfer_request; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transfer_request (id, user_id, amount, created_at, updated_at, processed_at, deleted_at, currency_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2891 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: transfer_request_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('transfer_request_id_seq', 1, false);
+
+
+--
+-- TOC entry 2793 (class 0 OID 16523)
+-- Dependencies: 217
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "user" (id, name, username, created_at, updated_at, deleted_at, edit_name_times) FROM stdin;
+9	s1	s1	2017-07-23 20:44:38.239669-04	2017-07-23 20:44:38.239669-04	\N	0
+10	s2	s2	2017-07-23 20:46:25.039969-04	2017-07-23 20:46:25.039969-04	\N	0
+11	Sukanya Parashar	suku123	2017-08-10 17:30:45.191241-04	2017-08-10 17:30:45.191241-04	\N	0
+12			2017-08-11 00:58:23.50819-04	2017-08-11 00:58:23.50819-04	\N	0
+\.
+
+
+--
+-- TOC entry 2892 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('user_id_seq', 12, true);
+
+
+--
+-- TOC entry 2893 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: user_password_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('user_password_id_seq', 10, true);
+
+
+--
+-- TOC entry 2802 (class 0 OID 17027)
+-- Dependencies: 226
+-- Data for Name: user_setting; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY user_setting (id, user_id, key, value, created_at, updated_at, deleted_at) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2894 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: user_setting_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('user_setting_id_seq', 1, false);
+
+
+--
+-- TOC entry 2795 (class 0 OID 16531)
+-- Dependencies: 219
+-- Data for Name: wallet; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY wallet (id, user_id, amount, created_at, updated_at, deleted_at, nickname, amount_locked, "primary", currency_id) FROM stdin;
+16	9	0	2017-08-09 17:15:55.354124-04	2017-08-09 17:15:55.354124-04	\N	Primary	0	YES	1
+17	9	0	2017-08-09 17:18:48.597374-04	2017-08-09 17:18:48.597374-04	\N	No Name	0	NO	1
+18	9	0	2017-08-09 17:19:37.472322-04	2017-08-09 17:19:37.472322-04	\N	No Name	0	NO	1
+19	9	0	2017-08-09 17:20:18.763203-04	2017-08-09 17:20:18.763203-04	\N	Primary	0	YES	2
+20	9	0	2017-08-09 17:25:39.326857-04	2017-08-09 17:25:39.326858-04	\N	No Name	0	NO	2
+21	9	0	2017-08-09 17:28:55.425556-04	2017-08-09 17:28:55.425556-04	\N	No Name	0	NO	2
+22	9	0	2017-08-09 17:35:31.891851-04	2017-08-09 17:35:31.891851-04	\N	No Name	0	NO	2
+23	9	0	2017-08-09 17:37:38.005276-04	2017-08-09 17:37:38.005276-04	\N	No Name	0	NO	2
+24	9	0	2017-08-09 17:54:44.656369-04	2017-08-09 17:54:44.65637-04	\N	No Name	0	NO	2
+25	9	0	2017-08-09 17:56:04.799867-04	2017-08-09 17:56:04.799867-04	\N	No Name	0	NO	2
+26	9	0	2017-08-09 18:05:37.159489-04	2017-08-09 18:05:37.159489-04	\N	No Name	0	NO	2
+27	9	0	2017-08-09 18:45:37.775616-04	2017-08-09 18:45:37.775617-04	\N	No Name	0	NO	2
+28	9	0	2017-08-09 18:51:43.543052-04	2017-08-09 18:51:43.543053-04	\N	No Name	0	NO	2
+\.
+
+
+--
+-- TOC entry 2779 (class 0 OID 16479)
+-- Dependencies: 203
+-- Data for Name: wallet_address; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY wallet_address (id, wallet_id, address, created_at, updated_at, deleted_at) FROM stdin;
+7	18	mgwBigizyohbXKYuncHZBW99RAYSxmGu1q	2017-08-09 17:19:37.674742-04	2017-08-09 17:19:37.674742-04	\N
+8	26	0x22980e0e8f7449a335cdf18dda477acb51e68dc0	2017-08-09 18:05:38.238396-04	2017-08-09 18:05:38.238396-04	\N
+9	27	0xed85843ec2483803d6211b13b4ae0a5f9e9828ba	2017-08-09 18:45:38.854919-04	2017-08-09 18:45:38.854919-04	\N
+10	28	0x73e2d3160cc403ceebc485b927e7921c67783894	2017-08-09 18:51:44.605408-04	2017-08-09 18:51:44.605408-04	\N
+\.
+
+
+--
+-- TOC entry 2895 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: wallet_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('wallet_address_id_seq', 10, true);
+
+
+--
+-- TOC entry 2896 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: wallet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('wallet_id_seq', 28, true);
+
+
+--
+-- TOC entry 2826 (class 0 OID 17442)
+-- Dependencies: 250
+-- Data for Name: wallet_password; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY wallet_password (id, wallet_id, password, created_at, updated_at, deleted_at) FROM stdin;
+1	19	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDAwMTgsImlhdCI6MTUwMjMxMzYxOH0.Hl91EwaxAwtktuaDwYkl-a-Hg36j5wYyQjXy_ZPhoLIr0rlU8zCKSvmplUf8JG0YvQsB4cnEm84hgCDEIGOsRxpZDPbfX7yE3vOy14qiXxw7K3c56LbsOFbLfS4FypzNM8jbyrab8kXA1PsNGUoyj3ZUxtqUnZrSQV51YHqI--Nad6UoNPqT8pM7x415desbR7Jc3i8_ELLPxnQWkbmmN8Crk1R9ke8oFqy5ARe-UgYnqiMBX3SJcl4rJZ5CmJvaHrbrw4AFN7mxxKIdKg9NER3F5db5nH5YunugLn40N5hr3SjfqQ4PZWXg2j__HQPPj2vZkWBDlH4dUq8KRvj86g	2017-08-09 17:20:18.771276-04	2017-08-09 17:20:18.771276-04	\N
+2	20	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDAzMzksImlhdCI6MTUwMjMxMzkzOX0.fvjkEpQs1qBwKP12OmzSxC_Gt0ci_PblL01rYJcLmnDRQE4VkLb4WpZTWxhOuN-mGxuXt1DDiEJnmNBPkTlrlQp5rwgSNL7KIBJ4XFldc9UFfgAYH4aWfbFjU4GJ8YmmsWSYtIcg4T2l_PzCS9KI5V77Q2bxJbzykF3fvL3oKJPrzDS-i1UpJs-EjE1VV6WiT2I2Th3tSLK5mx2XwnxSkygrjHUrk4c_2tlAEPiSfGZTpUTNoay5TdSsBhiiJCaFMelazsR_yMMYe-sc_4IVrePB7i4Ibd0RibsGbeDkQbR_3uIb6hpsHBseCyPW_6RLupNAS7_HuLgZh6kRH4CbWQ	2017-08-09 17:25:39.332795-04	2017-08-09 17:25:39.332795-04	\N
+3	21	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDA1MzUsImlhdCI6MTUwMjMxNDEzNX0.WXEvbQxwRcVxqqYpWqdw59G-L5mraioCY9SXlbUccOj_fXR65YWX28r0QEB3kslCUnX_QGJHrfOTVaXCfGidBPjLuV21Sm-sQ87RLxdw5HYHNojveQ8Xdb8woocNSOzL7-_t-4JgzDDtNkG04A3hBwneBqELr7QDbBLbfcDGpWmZGx8sdmKr6D4Sk7n16Rg45JT9sDSRpNecNf5OyIH-dZD7mMLLRSuJuiv0ZUxOuU_KX8fEHDllGGNedIJzgnbcSuD2aBaMbZj8kG72bUf4Cvq-fD7eurYXA08_fbqIMkO7OU10z4d-lf4lbdi1qm01lC0QMZG8gLvr9JiA9ZSZbA	2017-08-09 17:28:55.43071-04	2017-08-09 17:28:55.43071-04	\N
+4	22	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDA5MzEsImlhdCI6MTUwMjMxNDUzMX0.A0FRZr-1tmTryk9lbd7dbRgOuCHv2dGeQq4cFbRImpttZyiNPU4aMqeEebdZ4rYdPPNUy2TxEc_ScC5XC8JH_NPhFl0wwrNHL_9X0EYkVFrANYphQ62AdgxQQpSfcZl8EvINQFpuUa0XaVgZ-yRTFHHBVNHEUFyH8kztABUvFnnOV0L0rATizwZcp9APA7L53Nxg8EF5YTE7D60ybtPX_CO9BGvlDpTScxTaqAmzOM1Ai2FQX23eDfgPohUAG7KjYAThxU8oZvcTbJDc4KWP75ExfT7WmseavwB8WFAjYVy6Ev_OtN7Hy95cl8thQJ9kpxEl1V40PVccNxGdMl6RCw	2017-08-09 17:35:31.897682-04	2017-08-09 17:35:31.897682-04	\N
+5	23	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDEwNTgsImlhdCI6MTUwMjMxNDY1OH0.xYh2DUIKQVYN8XlF1YTCba3S8Io7ots2GhyEup8eyHAENj9Ib9HVhd4zuQHLwdI03LoKQhE1qdEPUQT_i2DQvqeCK_aBgX9KXF-kB4FfSW-eB09sSOylnD21KzjSCu4vfNdYEn_STBmYrLsboZ4p5gt9Fi9PcXnFmrY2dej6EDF9RZc7LJzW6YFQoihOr6zWF68xAxhTGSqioNKULwUnsBG44cqQFY-7ni4xCgFsTo5tH4RodAj13K_Qk4DU-zA-G0SQ4OOD9Z94DKiv0XYpGVR3oCr-czAF-MYcQDoDXAzcGZwO0jcE4Is3vmKRGHKaAdOJ0KoZx8unFGClMYOLXA	2017-08-09 17:37:38.012511-04	2017-08-09 17:37:38.012511-04	\N
+6	24	4VJrF^Z4Q!>i:tfp@6%%x_UAw3y3Zs	2017-08-09 17:54:44.658918-04	2017-08-09 17:54:44.658918-04	\N
+7	25	A%^43Z3$=)f5W@y*jhy1#$W%a#e9e$	2017-08-09 17:56:04.801826-04	2017-08-09 17:56:04.801826-04	\N
+8	26	1A97XnK:M@EF-HTX&Lb>G3h>gP47l#	2017-08-09 18:05:37.162264-04	2017-08-09 18:05:37.162264-04	\N
+9	27	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDI0MDUxMzcsImlhdCI6MTUwMjMxODczN30.n9eCnpEanJ_1UIpHN4xW2VNs78OUnlte3dXsFk0DlpDjqfnOmhaQ-kve-3x3sN1gv-bdCwG5aVPWCkx9Aphn7vEHu7n0qob11DSlXHgIRfaB2yQJgqshG-Lch1-ZodEneiTt6XgjOW6JGykrqgAmKGVPZ-P-HsWNkXEtSxz8Eqwdzs-2ev5ydmnCK_qCYz-pFkuMQ0cSCh8bN6Nl2U-d5_l-rIwOexoa3jphohSr3uFtwmif4bU7Rn_yKfeqh6-UlRKrdKi6h_Cu6KMglQssN4RtEJSbWwPd7AOEE-5_Z_ETNIlWmoayOLjMCYb58Pva7yeKmArNICqNWewbQTSCFw	2017-08-09 18:45:37.781827-04	2017-08-09 18:45:37.781827-04	\N
+10	28	eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjUxMDIzMTkxMDMsImlhdCI6MTUwMjMxOTEwM30.o6KyzqIW3Wn0PKW9mUS9hFc5x920HJ4xncU_Z7vRrvdNZ3xtW2VnxZH9z1HYCL52O4VqUrFKDczQRQKl2YR5_hEjuWwW_GR1w8Fb4vBUkC_vjJMDHrCsgTDgi4RJyxAEdzardjWOnOisjCFC-y8StnXAfZ22Pg2Nnk_r7rCTfP-s0FjK80mZUeve4wQRJ9OJo6SWammOs3vRwiaIZSkgrvd9u8yiTe-JeSN5lhmZjDBVQZ3RM0Of0kBKRhJvGBc9s6C0u3VnrOyMObx3RcNl3WBf-l-Q6Oo_1ceG_uErcGOtykxM-bDctGWDdq4fv1KFA0htiSd9Y1q_DHR_zTDuRQ	2017-08-09 18:51:43.549728-04	2017-08-09 18:51:43.549728-04	\N
+\.
+
+
+--
+-- TOC entry 2897 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: wallet_password_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('wallet_password_id_seq', 10, true);
+
+
+--
+-- TOC entry 2539 (class 2606 OID 16554)
+-- Name: address_detail address_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address_detail
+    ADD CONSTRAINT address_detail_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2537 (class 2606 OID 16556)
+-- Name: address address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address
+    ADD CONSTRAINT address_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2543 (class 2606 OID 16558)
+-- Name: admin_access admin_access_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admin_access
+    ADD CONSTRAINT admin_access_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2541 (class 2606 OID 16560)
+-- Name: admin admin_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admin
+    ADD CONSTRAINT admin_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2599 (class 2606 OID 17439)
+-- Name: api_key api_key_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY api_key
+    ADD CONSTRAINT api_key_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2545 (class 2606 OID 16562)
+-- Name: auth_token auth_token_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY auth_token
+    ADD CONSTRAINT auth_token_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2549 (class 2606 OID 16564)
+-- Name: bank_detail bank_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank_detail
+    ADD CONSTRAINT bank_detail_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2547 (class 2606 OID 16566)
+-- Name: bank bank_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank
+    ADD CONSTRAINT bank_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2551 (class 2606 OID 16568)
+-- Name: country country_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY country
+    ADD CONSTRAINT country_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2553 (class 2606 OID 16570)
+-- Name: wallet_address crypto_address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet_address
+    ADD CONSTRAINT crypto_address_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2597 (class 2606 OID 17397)
+-- Name: currency_pair currency_pair_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY currency_pair
+    ADD CONSTRAINT currency_pair_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2595 (class 2606 OID 17346)
+-- Name: currency currency_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY currency
+    ADD CONSTRAINT currency_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2573 (class 2606 OID 16943)
+-- Name: email email_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY email
+    ADD CONSTRAINT email_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2555 (class 2606 OID 16572)
+-- Name: field field_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY field
+    ADD CONSTRAINT field_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2583 (class 2606 OID 17245)
+-- Name: global_setting global_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY global_setting
+    ADD CONSTRAINT global_setting_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2557 (class 2606 OID 16574)
+-- Name: kyc_detail kyc_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_detail
+    ADD CONSTRAINT kyc_detail_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2559 (class 2606 OID 16576)
+-- Name: kyc_document kyc_document_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_document
+    ADD CONSTRAINT kyc_document_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2561 (class 2606 OID 16578)
+-- Name: mobile mobile_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY mobile
+    ADD CONSTRAINT mobile_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2579 (class 2606 OID 17151)
+-- Name: order_partial order_partial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY order_partial
+    ADD CONSTRAINT order_partial_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2563 (class 2606 OID 16580)
+-- Name: order order_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "order"
+    ADD CONSTRAINT order_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2575 (class 2606 OID 17024)
+-- Name: password password_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY password
+    ADD CONSTRAINT password_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2565 (class 2606 OID 16582)
+-- Name: transaction transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transaction
+    ADD CONSTRAINT transaction_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2591 (class 2606 OID 17309)
+-- Name: transfer_bank_detail transfer_bank_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_detail
+    ADD CONSTRAINT transfer_bank_detail_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2593 (class 2606 OID 17322)
+-- Name: transfer_bank_map transfer_bank_map_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_map
+    ADD CONSTRAINT transfer_bank_map_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2589 (class 2606 OID 17293)
+-- Name: transfer_bank transfer_bank_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank
+    ADD CONSTRAINT transfer_bank_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2587 (class 2606 OID 17270)
+-- Name: transfer_crypto_map transfer_crypto_map_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto_map
+    ADD CONSTRAINT transfer_crypto_map_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2585 (class 2606 OID 17256)
+-- Name: transfer_crypto transfer_crypto_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto
+    ADD CONSTRAINT transfer_crypto_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2581 (class 2606 OID 17229)
+-- Name: transfer_request transfer_request_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_request
+    ADD CONSTRAINT transfer_request_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2567 (class 2606 OID 16584)
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2577 (class 2606 OID 17035)
+-- Name: user_setting user_setting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY user_setting
+    ADD CONSTRAINT user_setting_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2569 (class 2606 OID 16946)
+-- Name: user user_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "user"
+    ADD CONSTRAINT user_username_key UNIQUE (username);
+
+
+--
+-- TOC entry 2601 (class 2606 OID 17450)
+-- Name: wallet_password wallet_password_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet_password
+    ADD CONSTRAINT wallet_password_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2571 (class 2606 OID 16586)
+-- Name: wallet wallet_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet
+    ADD CONSTRAINT wallet_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2604 (class 2606 OID 16587)
+-- Name: address_detail address_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address_detail
+    ADD CONSTRAINT address_id FOREIGN KEY (address_id) REFERENCES address(id);
+
+
+--
+-- TOC entry 2606 (class 2606 OID 16592)
+-- Name: admin_access admin_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admin_access
+    ADD CONSTRAINT admin_id FOREIGN KEY (admin_id) REFERENCES admin(id);
+
+
+--
+-- TOC entry 2609 (class 2606 OID 16597)
+-- Name: bank_detail bank_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank_detail
+    ADD CONSTRAINT bank_id FOREIGN KEY (bank_id) REFERENCES bank(id);
+
+
+--
+-- TOC entry 2612 (class 2606 OID 16602)
+-- Name: field country_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY field
+    ADD CONSTRAINT country_id FOREIGN KEY (country_id) REFERENCES country(id);
+
+
+--
+-- TOC entry 2602 (class 2606 OID 16607)
+-- Name: address country_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address
+    ADD CONSTRAINT country_id FOREIGN KEY (country_id) REFERENCES country(id);
+
+
+--
+-- TOC entry 2643 (class 2606 OID 17398)
+-- Name: currency_pair currency_pair_from_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY currency_pair
+    ADD CONSTRAINT currency_pair_from_currency_id_fkey FOREIGN KEY (from_currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2644 (class 2606 OID 17403)
+-- Name: currency_pair currency_pair_to_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY currency_pair
+    ADD CONSTRAINT currency_pair_to_currency_id_fkey FOREIGN KEY (to_currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2627 (class 2606 OID 17139)
+-- Name: email email_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY email
+    ADD CONSTRAINT email_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2610 (class 2606 OID 16612)
+-- Name: bank_detail field_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank_detail
+    ADD CONSTRAINT field_id FOREIGN KEY (field_id) REFERENCES field(id);
+
+
+--
+-- TOC entry 2605 (class 2606 OID 16617)
+-- Name: address_detail field_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address_detail
+    ADD CONSTRAINT field_id FOREIGN KEY (field_id) REFERENCES field(id);
+
+
+--
+-- TOC entry 2615 (class 2606 OID 16622)
+-- Name: kyc_document field_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_document
+    ADD CONSTRAINT field_id FOREIGN KEY (field_id) REFERENCES field(id);
+
+
+--
+-- TOC entry 2613 (class 2606 OID 16627)
+-- Name: kyc_detail field_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_detail
+    ADD CONSTRAINT field_id FOREIGN KEY (field_id) REFERENCES field(id);
+
+
+--
+-- TOC entry 2621 (class 2606 OID 16632)
+-- Name: transaction from_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transaction
+    ADD CONSTRAINT from_user FOREIGN KEY (from_user) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2619 (class 2606 OID 17377)
+-- Name: order order_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "order"
+    ADD CONSTRAINT order_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2622 (class 2606 OID 16637)
+-- Name: transaction order_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transaction
+    ADD CONSTRAINT order_id FOREIGN KEY (order_id) REFERENCES "order"(id);
+
+
+--
+-- TOC entry 2630 (class 2606 OID 17157)
+-- Name: order_partial order_partial_child_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY order_partial
+    ADD CONSTRAINT order_partial_child_order_id_fkey FOREIGN KEY (child_order_id) REFERENCES "order"(id);
+
+
+--
+-- TOC entry 2631 (class 2606 OID 17152)
+-- Name: order_partial order_partial_parent_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY order_partial
+    ADD CONSTRAINT order_partial_parent_order_id_fkey FOREIGN KEY (parent_order_id) REFERENCES "order"(id);
+
+
+--
+-- TOC entry 2620 (class 2606 OID 17382)
+-- Name: order order_rate_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "order"
+    ADD CONSTRAINT order_rate_currency_id_fkey FOREIGN KEY (rate_currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2628 (class 2606 OID 17043)
+-- Name: password password_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY password
+    ADD CONSTRAINT password_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2623 (class 2606 OID 16642)
+-- Name: transaction to_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transaction
+    ADD CONSTRAINT to_user FOREIGN KEY (to_user) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2624 (class 2606 OID 17372)
+-- Name: transaction transaction_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transaction
+    ADD CONSTRAINT transaction_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2640 (class 2606 OID 17367)
+-- Name: transfer_bank_detail transfer_bank_detail_field_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_detail
+    ADD CONSTRAINT transfer_bank_detail_field_id_fkey FOREIGN KEY (field_id) REFERENCES field(id);
+
+
+--
+-- TOC entry 2639 (class 2606 OID 17310)
+-- Name: transfer_bank_detail transfer_bank_detail_transfer_bank_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_detail
+    ADD CONSTRAINT transfer_bank_detail_transfer_bank_id_fkey FOREIGN KEY (transfer_bank_id) REFERENCES transfer_bank(id);
+
+
+--
+-- TOC entry 2642 (class 2606 OID 17328)
+-- Name: transfer_bank_map transfer_bank_map_transfer_bank_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_map
+    ADD CONSTRAINT transfer_bank_map_transfer_bank_id_fkey FOREIGN KEY (transfer_bank_id) REFERENCES transfer_bank(id);
+
+
+--
+-- TOC entry 2641 (class 2606 OID 17323)
+-- Name: transfer_bank_map transfer_bank_map_transfer_request_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank_map
+    ADD CONSTRAINT transfer_bank_map_transfer_request_id_fkey FOREIGN KEY (transfer_request_id) REFERENCES transfer_request(id);
+
+
+--
+-- TOC entry 2638 (class 2606 OID 17294)
+-- Name: transfer_bank transfer_bank_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_bank
+    ADD CONSTRAINT transfer_bank_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2635 (class 2606 OID 17362)
+-- Name: transfer_crypto transfer_crypto_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto
+    ADD CONSTRAINT transfer_crypto_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2636 (class 2606 OID 17281)
+-- Name: transfer_crypto_map transfer_crypto_map_transfer_crypto_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto_map
+    ADD CONSTRAINT transfer_crypto_map_transfer_crypto_id_fkey FOREIGN KEY (transfer_crypto_id) REFERENCES transfer_crypto(id);
+
+
+--
+-- TOC entry 2637 (class 2606 OID 17276)
+-- Name: transfer_crypto_map transfer_crypto_map_transfer_request_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto_map
+    ADD CONSTRAINT transfer_crypto_map_transfer_request_id_fkey FOREIGN KEY (transfer_request_id) REFERENCES transfer_request(id);
+
+
+--
+-- TOC entry 2634 (class 2606 OID 17271)
+-- Name: transfer_crypto transfer_crypto_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_crypto
+    ADD CONSTRAINT transfer_crypto_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2633 (class 2606 OID 17357)
+-- Name: transfer_request transfer_request_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_request
+    ADD CONSTRAINT transfer_request_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2632 (class 2606 OID 17230)
+-- Name: transfer_request transfer_request_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY transfer_request
+    ADD CONSTRAINT transfer_request_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2608 (class 2606 OID 16647)
+-- Name: bank user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bank
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2603 (class 2606 OID 16652)
+-- Name: address user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY address
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2616 (class 2606 OID 16662)
+-- Name: kyc_document user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_document
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2614 (class 2606 OID 16667)
+-- Name: kyc_detail user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY kyc_detail
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2617 (class 2606 OID 16672)
+-- Name: mobile user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY mobile
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2607 (class 2606 OID 16677)
+-- Name: auth_token user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY auth_token
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2618 (class 2606 OID 16682)
+-- Name: order user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "order"
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2625 (class 2606 OID 16687)
+-- Name: wallet user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2629 (class 2606 OID 17038)
+-- Name: user_setting user_setting_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY user_setting
+    ADD CONSTRAINT user_setting_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+
+--
+-- TOC entry 2626 (class 2606 OID 17352)
+-- Name: wallet wallet_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet
+    ADD CONSTRAINT wallet_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES currency(id);
+
+
+--
+-- TOC entry 2611 (class 2606 OID 17162)
+-- Name: wallet_address wallet_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet_address
+    ADD CONSTRAINT wallet_id FOREIGN KEY (wallet_id) REFERENCES wallet(id);
+
+
+--
+-- TOC entry 2645 (class 2606 OID 17451)
+-- Name: wallet_password wallet_password_wallet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY wallet_password
+    ADD CONSTRAINT wallet_password_wallet_id_fkey FOREIGN KEY (wallet_id) REFERENCES wallet(id);
+
+
+-- Completed on 2017-08-11 20:23:04 EDT
+
+--
+-- PostgreSQL database dump complete
+--
+
